@@ -23,7 +23,7 @@ public struct HealthBiometricAuthorizer {
         )
     }
     
-    init(
+    public init(
         authorizor: HealthKitAuthorizor,
         logger: CoreLogger = Logger(subsystem: "HealthStore", category: "HealthBiometricAuthorizer")
     ) {
@@ -53,43 +53,33 @@ public struct HealthBiometricAuthorizer {
     public func getRequestStatusForAuthorization(
         biometrics: [HealthBiometric]
     ) async throws -> RequestStatusForAuthorization {
-        try await withCheckedThrowingContinuation { continuation in
-            
-            // Returns a Boolean value that indicates whether HealthKit is available on this device.
-            //
-            // - HealthKit is not available on iPad.
-            guard self.authorizor.isHealthDataAvailable() else {
-                self.logger.info("Health data not available")
-                continuation.resume(returning: .wouldNotPrompt)
-                return
-            }
-            
-            // Prepare health data types to request status for.
-            var typesToRead: Set<HKObjectType> = Set()
-            for biometric in biometrics {
-                typesToRead.insert(biometric.objectType)
-            }
-            
-            // Request authorization status
-            self.authorizor.getRequestStatusForAuthorization(
-                toShare: [],
-                read: typesToRead
-            ) { (status, error) in
-
-                if let error = error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-                
-                switch status {
-                case .shouldRequest, .unknown:
-                    continuation.resume(returning: .wouldPrompt)
-                case .unnecessary:
-                    continuation.resume(returning: .wouldNotPrompt)
-                @unknown default:
-                    continuation.resume(throwing: Error.unsupportedRequestStatusForAuthorizationStatus)
-                }
-            }
+        
+        // Returns a Boolean value that indicates whether HealthKit is available on this device.
+        //
+        // - HealthKit is not available on iPad.
+        guard self.authorizor.isHealthDataAvailable() else {
+            self.logger.info("Health data not available")
+            return .wouldNotPrompt
+        }
+        
+        // Prepare health data types to request status for.
+        var typesToRead: Set<HKObjectType> = Set()
+        for biometric in biometrics {
+            typesToRead.insert(biometric.sampleType)
+        }
+        
+        // Request authorization status
+        let status  = try await self.authorizor.getRequestStatusForAuthorization(
+            toShare: [],
+            read: typesToRead
+        )
+        switch status {
+        case .shouldRequest, .unknown:
+            return .wouldPrompt
+        case .unnecessary:
+            return .wouldNotPrompt
+        @unknown default:
+            throw Error.unsupportedRequestStatusForAuthorizationStatus
         }
     }
     
@@ -124,7 +114,7 @@ public struct HealthBiometricAuthorizer {
         // Prepare health data types to request.
         var typesToRead: Set<HKObjectType> = Set()
         for biometric in biometrics {
-            typesToRead.insert(biometric.objectType)
+            typesToRead.insert(biometric.sampleType)
         }
         
         // Request authorization from HealthKit
@@ -147,5 +137,8 @@ public struct HealthBiometricAuthorizer {
         
         /// Thrown when there is a new and unhandled case in the `HKAuthorizationRequestStatus` type.
         case unsupportedRequestStatusForAuthorizationStatus
+        
+        /// An error thrown if the request for authoration failed.
+        case failedToRequestAuthorization
     }
 }
