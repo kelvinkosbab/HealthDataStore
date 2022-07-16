@@ -7,6 +7,9 @@
 import XCTest
 @testable import HealthDataStore
 
+// MARK: - HealthBiometricTests
+
+@available(macOS 13.0, *)
 class HealthBiometricTests : XCTestCase {
     
     /// Tests the expected raw values of `HealthBiometric.Type`. These values should not change.

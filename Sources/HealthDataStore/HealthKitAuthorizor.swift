@@ -11,7 +11,8 @@ import Core
 
 // MARK: - HealthKitAuthorizor
 
-public protocol HealthKitAuthorizor {
+@available(macOS 13.0, *)
+public protocol HealthKitAuthorizor : HealthKitSupported {
     
     /// Applications may call this method to determine whether the user would be prompted for authorization if
     /// the same collections of types are passed to requestAuthorizationToShareTypes:readTypes:completion:.
@@ -48,15 +49,11 @@ public protocol HealthKitAuthorizor {
         toShare typesToShare: Set<HKSampleType>,
         read typesToRead: Set<HKObjectType>
     ) async throws
-    
-    /// HealthKit is not supported on all iOS devices.  Using HKHealthStore APIs on devices which are not
-    /// supported will result in errors with the HKErrorHealthDataUnavailable code.  Call isHealthDataAvailable
-    /// before attempting to use other parts of the framework.
-    func isHealthDataAvailable() -> Bool
 }
 
 // MARK: - HKHealthStore
 
+@available(macOS 13.0, *)
 extension HKHealthStore : HealthKitAuthorizor {
     
     public func getRequestStatusForAuthorization(
@@ -94,7 +91,4 @@ extension HKHealthStore : HealthKitAuthorizor {
         }
     }
 
-    public func isHealthDataAvailable() -> Bool {
-        return HKHealthStore.isHealthDataAvailable()
-    }
 }

@@ -9,6 +9,7 @@ import Foundation
 
 // MARK: - HealthBiometricAuthorization
 
+@available(macOS 13.0, *)
 public struct HealthBiometricAuthorization {
     
     public enum Status : Int {

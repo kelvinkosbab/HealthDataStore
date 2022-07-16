@@ -43,6 +43,7 @@ enum HealthBiometricType : Int {
 
 // MARK: - HealthBiometric
 
+@available(macOS 13.0, *)
 public struct HealthBiometric {
     
     // MARK: - Properties

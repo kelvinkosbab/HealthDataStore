@@ -12,6 +12,7 @@ import Core
 // MARK: - HealthBiometricAuthorizer
 
 /// Responsible for providing APIs to determine the authorization status for health biometrics from HealthKit.
+@available(macOS 13.0, *)
 public struct HealthBiometricAuthorizer {
     
     let authorizor: HealthKitAuthorizor
@@ -57,7 +58,7 @@ public struct HealthBiometricAuthorizer {
         // Returns a Boolean value that indicates whether HealthKit is available on this device.
         //
         // - HealthKit is not available on iPad.
-        guard self.authorizor.isHealthDataAvailable() else {
+        guard self.authorizor.isHealthDataAvailable else {
             self.logger.info("Health data not available")
             return .wouldNotPrompt
         }
@@ -106,7 +107,7 @@ public struct HealthBiometricAuthorizer {
         // Returns a Boolean value that indicates whether HealthKit is available on this device.
         //
         // - HealthKit is not available on iPad.
-        guard self.authorizor.isHealthDataAvailable() else {
+        guard self.authorizor.isHealthDataAvailable else {
             self.logger.info("Health data not available")
             return
         }
