@@ -29,7 +29,7 @@ public protocol QueryExecutor {
     func execute(
         for biometric: HealthBiometric,
         options: QueryOptions
-    ) async throws -> [HKSample]
+    ) async throws -> [HKQuantitySample]
 }
 
 /// An object that provides configuration options for a Health Store query.
@@ -68,11 +68,23 @@ public struct QueryOptions {
     let limit: Limit
     
     /// An array of NSSortDescriptors.
+    ///
+    /// Consider these key paths for predicates:
+    /// - `HKPredicateKeyPathQuantity`: The key path for accessing the sample’s quantity.
+    /// - `HKPredicateKeyPathCount`: A key path for the sample’s count.
     let sortDescriptors: [NSSortDescriptor]?
     
+    /// Constructor.
+    ///
+    /// - Parameter startDate: The start date limit of the query. If all health data is desired consider using `Date.distantPast`.
+    /// - Parameter endDate: The end date limit of the query.
+    /// - Parameter limit: The maximum number of results the receiver will return upon completion.
+    /// - Parameter sortDescriptors: An array of NSSortDescriptors. Consider these key paths for predicates.
+    ///   `HKPredicateKeyPathQuantity`: The key path for accessing the sample’s quantity.
+    ///   `HKPredicateKeyPathCount`: A key path for the sample’s count.
     public init(
-        startDate: Date = .distantPast,
-        endDate: Date = Date(),
+        startDate: Date,
+        endDate: Date,
         limit: Limit = .noLimit,
         sortDescriptors: [NSSortDescriptor]? = nil
     ) {
@@ -83,6 +95,13 @@ public struct QueryOptions {
     }
 }
 
+/// Defines errors thrown when executing a health query.
+public enum QueryError : Error {
+    /// After a query it is expected to be able to cast to a `HKQuantitySample` type. This error is thrown when the returned
+    /// samples do not conform to `HKQuantitySample`.
+    case unsupportedSampleType(samples: [HKSample])
+}
+
 // MARK: - HKHealthStore
 
 @available(macOS 13.0, *)
@@ -91,7 +110,7 @@ extension HKHealthStore : QueryExecutor {
     public func execute(
         for biometric: HealthBiometric,
         options: QueryOptions
-    ) async throws -> [HKSample] {
+    ) async throws -> [HKQuantitySample] {
         return try await withCheckedThrowingContinuation { continuation in
             let predicate = HKQuery.predicateForSamples(withStart: options.startDate, end: options.endDate)
             let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate,
@@ -100,19 +119,25 @@ extension HKHealthStore : QueryExecutor {
                 sampleType: biometric.sampleType,
                 predicate: predicate,
                 limit: options.limit.rawValue,
-                sortDescriptors: [ sortDescriptor ]) { query, samples, error in
+                sortDescriptors: [ sortDescriptor ]
+            ) { query, samples, error in
                     
-                    guard let samples else {
-                        if let error {
-                            continuation.resume(throwing: error)
-                        } else {
-                            continuation.resume(returning: [])
-                        }
-                        return
+                guard let samples else {
+                    if let error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume(returning: [])
                     }
-                    
-                    continuation.resume(returning: samples)
+                    return
                 }
+                
+                guard let quantitySamples = samples as? [HKQuantitySample] else {
+                    continuation.resume(throwing: QueryError.unsupportedSampleType(samples: samples))
+                    return
+                }
+                
+                continuation.resume(returning: quantitySamples)
+            }
             HKHealthStore().execute(query)
         }
     }
