@@ -51,8 +51,8 @@ public struct HealthBiometricAuthorizer {
     /// background queue.
     ///
     /// - Returns a value indicating whether authorization should be requested or not.
-    public func getRequestStatusForAuthorization(
-        biometrics: [HealthBiometric]
+    func getRequestStatusForAuthorization(
+        biometrics: [CodableHealthBiometric]
     ) async throws -> RequestStatusForAuthorization {
         
         // Returns a Boolean value that indicates whether HealthKit is available on this device.
@@ -74,6 +74,7 @@ public struct HealthBiometricAuthorizer {
             toShare: [],
             read: typesToRead
         )
+        
         switch status {
         case .shouldRequest, .unknown:
             return .wouldPrompt
@@ -100,8 +101,8 @@ public struct HealthBiometricAuthorizer {
     /// To customize the messages displayed on the authorization sheet, set the following keys in your app's
     /// Info.plist file. Set the NSHealthShareUsageDescription key to customize the message for reading data.
     /// Set the NSHealthUpdateUsageDescription key to customize the message for writing data.
-    public func requestAuthorization(
-        biometrics: [HealthBiometric]
+    func requestAuthorization(
+        biometrics: [CodableHealthBiometric]
     ) async throws {
         
         // Returns a Boolean value that indicates whether HealthKit is available on this device.
@@ -119,14 +120,10 @@ public struct HealthBiometricAuthorizer {
         }
         
         // Request authorization from HealthKit
-        do {
-            try await self.authorizor.requestAuthorization(
-                toShare: [],
-                read: typesToRead
-            )
-        } catch {
-            throw error
-        }
+        try await self.authorizor.requestAuthorization(
+            toShare: [],
+            read: typesToRead
+        )
     }
     
     // MARK: - Error
@@ -134,7 +131,7 @@ public struct HealthBiometricAuthorizer {
     enum Error : Swift.Error {
         
         /// Thrown when a certain `HealthBiometric` is unable to be referenced and is unavailable.
-        case biometricNotAvailable(_ biometric: HealthBiometric)
+        case biometricNotAvailable(_ biometric: CodableHealthBiometric)
         
         /// Thrown when there is a new and unhandled case in the `HKAuthorizationRequestStatus` type.
         case unsupportedRequestStatusForAuthorizationStatus

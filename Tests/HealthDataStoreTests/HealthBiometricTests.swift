@@ -23,14 +23,14 @@ class HealthBiometricTests : XCTestCase {
     
     /// Tests a single HealthKit quantity type biometirc to insure it correctly maps in the `HealthBiometric` type.
     func testHKQuantityTypeIdentifierBiometrics() {
-        let bodyMassIndex = try? HealthBiometric(identifier: .bodyMassIndex)
+        let bodyMassIndex = try? CodableHealthBiometric(identifier: .bodyMassIndex)
         XCTAssert(bodyMassIndex?.identifier == "HKQuantityTypeIdentifierBodyMassIndex")
         XCTAssert(bodyMassIndex?.biometricType == .quantity)
     }
     
     /// Tests a single HealthKit category type biometirc to insure it correctly maps in the `HealthBiometric` type.
     func testHKCategoryTypeIdentifierBiometrics() {
-        let bodyMassIndex = try? HealthBiometric(identifier: .sleepAnalysis)
+        let bodyMassIndex = try? CodableHealthBiometric(identifier: .sleepAnalysis)
         XCTAssert(bodyMassIndex?.identifier == "HKCategoryTypeIdentifierSleepAnalysis")
         XCTAssert(bodyMassIndex?.biometricType == .category)
     }

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import HealthKit
 
 // MARK: - HealthBiometricAuthorization
 
@@ -18,14 +19,38 @@ public struct HealthBiometricAuthorization {
         case authorized = 2
     }
     
-    public let biometric: HealthBiometric
+    let biometric: CodableHealthBiometric
     public let status: Status
     
     public init(
-        biometric: HealthBiometric,
+        identifier: HKQuantityTypeIdentifier,
         status: Status
-    ) {
-        self.biometric = biometric
+    ) throws {
+        self.biometric = try CodableHealthBiometric(identifier: identifier)
+        self.status = status
+    }
+    
+    public init?(
+        identifier: HKCategoryTypeIdentifier,
+        status: Status
+    ) throws {
+        self.biometric = try CodableHealthBiometric(identifier: identifier)
+        self.status = status
+    }
+    
+    public init(
+        identifier: HKCorrelationTypeIdentifier,
+        status: Status
+    ) throws {
+        self.biometric = try CodableHealthBiometric(identifier: identifier)
+        self.status = status
+    }
+    
+    public init(
+        identifier: HKDocumentTypeIdentifier,
+        status: Status
+    ) throws {
+        self.biometric = try CodableHealthBiometric(identifier: identifier)
         self.status = status
     }
 }

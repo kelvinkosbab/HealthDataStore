@@ -8,12 +8,12 @@
 import Foundation
 import HealthKit
 
-// MARK: - HealthBiometricType
+// MARK: - CodableHealthBiometricType
 
 /// An abstract type for all classes that identify a specific type of sample when working with the HealthKit store.
 ///
 /// https://developer.apple.com/documentation/healthkit/hksampletype
-enum HealthBiometricType : Int {
+enum CodableHealthBiometricType : Int {
     
     /// A type that identifies samples that store numerical values.
     ///
@@ -41,23 +41,42 @@ enum HealthBiometricType : Int {
     case workout = 4
 }
 
-// MARK: - HealthBiometric
+/// Helper object to define a wokrout identifier type.
+enum WorkoutTypeIdentifier : String {
+    
+    /// This method returns an instance of the HKWorkoutType concrete subclass. HealthKit uses workout types to create
+    /// samples that store information about individual workouts. Use workout type instances to create workout objects that
+    /// you can save in the HealthKit store. For more information, see `HKWorkoutType`.
+    ///
+    /// In HealthKit, all workouts use the same workout type.
+    case workout = "WorkoutTypeIdentifier"
+}
+
+// MARK: - CodableHealthBiometric
 
 @available(macOS 13.0, *)
-public struct HealthBiometric {
+struct CodableHealthBiometric {
     
     // MARK: - Properties
     
     let identifier: String
-    let biometricType: HealthBiometricType
+    let biometricType: CodableHealthBiometricType
     let sampleType: HKSampleType
     
     // MARK: - InitError
     
-    public enum InitError : Error, LocalizedError {
+    enum InitError : Error, LocalizedError {
+        
+        /// Error thrown when an identifier does not correspond to a HealthKit type.
+        ///
+        /// Causes:
+        /// - `HKObjectType.quantityType(forIdentifier: identifier) // returns nil`
+        /// - `HKObjectType.categoryType(forIdentifier: identifier) // returns nil`
+        /// - `HKObjectType.correlationType(forIdentifier: identifier) // returns nil`
+        /// - `HKObjectType.documentType(forIdentifier: identifier) // returns nil`
         case undefinedHKObjectType(identifier: String)
         
-        public var errorDescription: String? {
+        var errorDescription: String? {
             switch self {
             case .undefinedHKObjectType(identifier: let identifier):
                 return "Failed to create a HKObjectType with identifier=\(identifier)"
@@ -67,6 +86,9 @@ public struct HealthBiometric {
     
     // MARK: - Public Init
     
+    /// Initializes a quantity type.
+    ///
+    /// - Throws if the identifier is not valid in HealthKit.
     public init(
         identifier: HKQuantityTypeIdentifier
     ) throws {
@@ -76,7 +98,10 @@ public struct HealthBiometric {
         )
     }
     
-    public init?(
+    /// Initializes a category type.
+    ///
+    /// - Throws if the identifier is not valid in HealthKit.
+    public init(
         identifier: HKCategoryTypeIdentifier
     ) throws {
         try self.init(
@@ -85,6 +110,9 @@ public struct HealthBiometric {
         )
     }
     
+    /// Initializes a quantity type.
+    ///
+    /// - Throws if the identifier is not valid in HealthKit.
     public init(
         identifier: HKCorrelationTypeIdentifier
     ) throws {
@@ -94,6 +122,9 @@ public struct HealthBiometric {
         )
     }
     
+    /// Initializes a document type.
+    ///
+    /// - Throws if the identifier is not valid in HealthKit.
     public init(
         identifier: HKDocumentTypeIdentifier
     ) throws {
@@ -103,11 +134,23 @@ public struct HealthBiometric {
         )
     }
     
+    /// Initializes a workout type.
+    ///
+    /// - Throws if the identifier is not valid in HealthKit.
+    public init(
+        identifier: WorkoutTypeIdentifier
+    ) throws {
+        try self.init(
+            identifier: identifier.rawValue,
+            biometricType: .workout
+        )
+    }
+    
     // MARK: - Private Init
     
     private init(
         identifier: String,
-        biometricType: HealthBiometricType
+        biometricType: CodableHealthBiometricType
     ) throws {
         switch biometricType {
         case .quantity:
@@ -153,7 +196,7 @@ public struct HealthBiometric {
     
     private init(
         identifier: String,
-        biometricType: HealthBiometricType,
+        biometricType: CodableHealthBiometricType,
         sampleType: HKSampleType?
     ) throws {
         
