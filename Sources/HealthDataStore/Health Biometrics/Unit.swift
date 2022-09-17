@@ -109,12 +109,14 @@ import HealthKit
 /// When converting from Foundation formatter unit to HKUnit, if there's not a match, nil will be returned.
 /// When converting from HKUnit to the Foundation formatter unit, if there's not a match, an exception will be thrown.
 public protocol Unit {
-    var stringRepresentation: String { get }
+    
+    /// A string representation of the unit. For example for a meter, the `rawValue` returns `m`.
+    var rawValue: String { get }
 }
 
 internal extension Unit {
     
-    var hkUnit: HKUnit {
-        return HKUnit(from: self.stringRepresentation)
+    var healthKitUnit: HKUnit {
+        return HKUnit(from: self.rawValue)
     }
 }

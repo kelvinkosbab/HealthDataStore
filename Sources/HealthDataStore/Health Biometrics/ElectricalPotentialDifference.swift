@@ -5,14 +5,20 @@
 //
 
 import Foundation
+import HealthKit
 
 // MARK: - Electric Potential Difference
 
 /// Deinfes a unit of electric potential difference.
-public struct ElectricalPotentialDifference : Unit {
-    
-    public let stringRepresentation: String
+public enum ElectricalPotentialDifference : String, Unit {
     
     // Volts is the SI unit of electric potential.
-    public static let volts = ElectricalPotentialDifference(stringRepresentation: "V")
+    case volts = "V"
+    
+    var healthKitUnit: HKUnit {
+        switch self {
+        case .volts:
+            return HKUnit.volt()
+        }
+    }
 }

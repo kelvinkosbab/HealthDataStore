@@ -5,14 +5,20 @@
 //
 
 import Foundation
+import HealthKit
 
 // MARK: - Electrical Conductance
 
 /// Deinfes a unit of electrical conductance.
-public struct ElectricalConductance : Unit {
-    
-    public let stringRepresentation: String
+public enum ElectricalConductance : String, Unit {
     
     /// Siemens is the SI unit of electical conductance.
-    public static let siemens = ElectricalConductance(stringRepresentation: "S")
+    case siemens = "S"
+    
+    var healthKitUnit: HKUnit {
+        switch self {
+        case .siemens:
+            return HKUnit.siemen()
+        }
+    }
 }

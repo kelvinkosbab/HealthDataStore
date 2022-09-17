@@ -5,6 +5,7 @@
 //
 
 import Foundation
+import HealthKit
 
 // MARK: - CardioFitness
 
@@ -17,9 +18,7 @@ import Foundation
 /// endurance capacity in exercise performance. Elite athletes, such as competitive distance runners, racing cyclists or Olympic
 /// cross-country skiers, can achieve V̇O2 max values exceeding 90 mL/(kg·min), while some endurance animals, such as Alaskan
 /// huskies, have V̇O2 max values exceeding 200 mL/(kg·min).
-public struct CardioFitness : Unit {
+public enum CardioFitness : String, Unit {
     
-    public let stringRepresentation: String
-    
-    public static let vo2 = CardioFitness(stringRepresentation: "mL/min·kg")
+    case vo2 = "mL/min·kg"
 }
