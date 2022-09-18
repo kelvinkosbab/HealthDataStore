@@ -28,3 +28,34 @@ public enum Temperature : String, Unit {
         }
     }
 }
+
+// MARK: - TemperatureBiometric
+
+public struct TemperatureBiometric : Biometric {
+    
+    public static let Units = Temperature.self
+    
+    public let healthKitIdentifier: HKQuantityTypeIdentifier
+    
+    /// A quantity sample type that measures the user’s body temperature.
+    ///
+    /// These samples use temperature units (described in `HKUnit`) and measure discrete values (described in `HKStatisticsQuery`).
+    public static let bodyTemperature = Self(healthKitIdentifier: .bodyTemperature)
+}
+
+// MARK: - QueryExecutor + Length
+
+public extension QueryExecutor {
+    
+    func fetch(
+        _ biometric: TemperatureBiometric,
+        in unit: TemperatureBiometric.UnitofMeasurement,
+        options: QueryOptions
+    ) async throws -> [QueryResult] {
+        return try await self.fetch(
+            healthKitIdentifier: biometric.healthKitIdentifier,
+            unit: unit,
+            options: options
+        )
+    }
+}

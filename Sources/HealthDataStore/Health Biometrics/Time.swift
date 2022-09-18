@@ -31,3 +31,48 @@ public enum Time : String, Unit {
         }
     }
 }
+
+// MARK: - TimeBiometric
+
+public struct TimeBiometric : Biometric {
+    
+    public static let Units = Time.self
+    
+    public let healthKitIdentifier: HKQuantityTypeIdentifier
+    
+    /// A quantity sample type that measures the amount of time the user spent exercising.
+    ///
+    /// This quantity type measures every full minute of movement that equals or exceeds the intensity of a brisk walk.
+    ///
+    /// Apple watch automatically records exercise time. By default, the watch uses the accelerometer to estimate the
+    /// intensity of the user’s movement. However, during workout sessions, the watch uses additional sensors, like the
+    /// heart rate sensor and GPS, to generate estimates.
+    ///
+    /// `HKWorkoutSession` sessions also contribute to the exercise time. For more information, see Fill the Activity
+    /// Rings.
+    ///
+    /// These samples use time units (described in `HKUnit`) and measure cumulative values (described in `HKStatisticsQuery`).
+    public static let appleExerciseTime = Self(healthKitIdentifier: .appleExerciseTime)
+    
+    /// A quantity sample type that measures the amount of time the user has spent standing.
+    ///
+    /// These samples use time units (described in `HKUnit`) and measure cumulative values (described in `HKStatisticsQuery`).
+    public static let appleStandTime = Self(healthKitIdentifier: .appleStandTime)
+}
+
+// MARK: - QueryExecutor + Time
+
+public extension QueryExecutor {
+    
+    func fetch(
+        _ biometric: TimeBiometric,
+        in unit: TimeBiometric.UnitofMeasurement,
+        options: QueryOptions
+    ) async throws -> [QueryResult] {
+        return try await self.fetch(
+            healthKitIdentifier: biometric.healthKitIdentifier,
+            unit: unit,
+            options: options
+        )
+    }
+}

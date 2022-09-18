@@ -32,6 +32,45 @@ public protocol QueryExecutor {
     ) async throws -> [HKQuantitySample]
 }
 
+extension QueryExecutor {
+    
+    /// Helper function for fetching samples for a given quantity type for a given unit.
+    internal func fetch(
+        healthKitIdentifier: HKQuantityTypeIdentifier,
+        unit: Unit,
+        options: QueryOptions
+    ) async throws -> [QueryResult] {
+        let biometric = try CodableHealthBiometric(identifier: healthKitIdentifier)
+        let samples = try await self.fetchSamples(for: biometric.sampleType, options: options)
+        return samples.map { sample in
+            return QueryResult(
+                startDate: sample.startDate,
+                endDate: sample.endDate,
+                value: sample.quantity.doubleValue(for: unit.healthKitUnit),
+                unit: unit
+            )
+        }
+    }
+}
+
+// MARK: - QueryResult
+
+/// A sample that represents a piece of data associated with a start and end time.
+public struct QueryResult {
+    
+    /// The sample's start date.
+    public let startDate: Date
+    
+    /// The sample's end date.
+    public let endDate: Date
+    
+    /// The quantity’s value in the provided unit.
+    public let value: Double
+    
+    /// The measurement unit of the sample.
+    public let unit: Unit
+}
+
 // MARK: - QueryError
 
 /// Defines errors thrown when executing a health query.
@@ -52,6 +91,7 @@ extension HKHealthStore : QueryExecutor {
         options: QueryOptions
     ) async throws -> [HKQuantitySample] {
         return try await withCheckedThrowingContinuation { continuation in
+            
             let predicate = HKQuery.predicateForSamples(
                 withStart: options.startDate,
                 end: options.endDate

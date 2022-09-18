@@ -12,7 +12,7 @@ import HealthKit
 /// Deinfes a unit of electrical frequency.
 public enum Frequency : String, Unit {
     
-    // Hertz is the SI unit of frequency.
+    // Hertz is the SI unit of electrical frequency.
     case hertz = "Hz"
     
     var healthKitUnit: HKUnit {

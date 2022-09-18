@@ -20,5 +20,59 @@ import HealthKit
 /// huskies, have V̇O2 max values exceeding 200 mL/(kg·min).
 public enum CardioFitness : String, Unit {
     
-    case vo2 = "mL/min·kg"
+    /// Standard unit for `vo2max` (`mL/(kg·min`).
+    case mLkgPerMin = "mL/min·kg"
+    
+    var healthKitUnit: HKUnit {
+        switch self {
+        case .mLkgPerMin:
+            return HKUnit.literUnit(with: .milli).unitMultiplied(by: HKUnit.gramUnit(with: .kilo)).unitDivided(by: HKUnit.minute())
+        }
+    }
+}
+
+// MARK: - CardioFitnessBiometric
+
+public struct CardioFitnessBiometric : Biometric {
+    
+    public static let Units = CardioFitness.self
+    
+    public let healthKitIdentifier: HKQuantityTypeIdentifier
+    
+    /// A quantity sample that measures the maximal oxygen consumption during exercise.
+    ///
+    /// VO2max—the maximum amount of oxygen your body can consume during exercise— is a strong predictor of overall
+    /// health. Clinical tests measure VO2max by having the patient exercise on a treadmill or bike, with an intensity that
+    /// increases every few minutes until exhaustion.
+    ///
+    /// On Apple Watch Series 3 or later, the system automatically saves `vo2Max` samples to HealthKit. The watch estimates
+    /// the user’s VO2max based on data gathered while the user is walking or running outdoors. For more information,
+    /// see [Understand Estimated Test Results](https://developer.apple.com/documentation/healthkit/hkquantitytypeidentifier/3552083-sixminutewalktestdistance#3683764).
+    ///
+    /// You can also create and save your own `vo2Max` samples—for example, when creating an app that records the
+    /// results of tests performed in a clinic. When creating vo2Max samples, use the `HKMetadataKeyVO2MaxTestType`
+    /// metadata key to specify the type of test used to generate the sample.
+    ///
+    /// `vo2Max` samples use volume/mass/time units (described in `HKUnit`), measured in ml/kg /min. They measure
+    /// discrete values (described in `HKStatisticsQuery`).
+    ///
+    /// For more info see [Apple's vo2max documentation](https://developer.apple.com/documentation/healthkit/hkquantitytypeidentifier/2867757-vo2max).
+    public static let vo2Max = Self(healthKitIdentifier: .vo2Max)
+}
+
+// MARK: - QueryExecutor + Length
+
+public extension QueryExecutor {
+    
+    func fetch(
+        _ biometric: CardioFitnessBiometric,
+        in unit: CardioFitnessBiometric.UnitofMeasurement,
+        options: QueryOptions
+    ) async throws -> [QueryResult] {
+        return try await self.fetch(
+            healthKitIdentifier: biometric.healthKitIdentifier,
+            unit: unit,
+            options: options
+        )
+    }
 }
