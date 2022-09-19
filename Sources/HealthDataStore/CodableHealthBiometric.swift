@@ -42,7 +42,7 @@ enum CodableHealthBiometricType : Int {
 }
 
 /// Helper object to define a wokrout identifier type.
-enum WorkoutTypeIdentifier : String {
+public enum WorkoutTypeIdentifier : String {
     
     /// This method returns an instance of the HKWorkoutType concrete subclass. HealthKit uses workout types to create
     /// samples that store information about individual workouts. Use workout type instances to create workout objects that

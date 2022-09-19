@@ -86,3 +86,22 @@ public extension QueryExecutor {
         )
     }
 }
+
+// MARK: - HealthKitAuthorizor + Rate
+
+public extension HealthKitAuthorizor {
+    
+    func getRequestStatusForAuthorization(
+        toShare typesToShare: Set<RateBiometric>,
+        read typesToRead: Set<RateBiometric>
+    ) async throws -> HKAuthorizationRequestStatus {
+        return try await self.internalGetRequestStatusForAuthorization(toShare: typesToShare, read: typesToRead)
+    }
+    
+    func requestAuthorization(
+        toShare typesToShare: Set<RateBiometric>,
+        read typesToRead: Set<RateBiometric>
+    ) async throws {
+        return try await self.internalRequestAuthorization(toShare: typesToShare, read: typesToRead)
+    }
+}

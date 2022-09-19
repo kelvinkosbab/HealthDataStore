@@ -51,6 +51,54 @@ public protocol HealthKitAuthorizor : HealthKitSupported {
     ) async throws
 }
 
+extension HealthKitAuthorizor {
+    
+    internal func internalGetRequestStatusForAuthorization<TargetBiometric: Biometric>(
+        toShare typesToShare: Set<TargetBiometric>,
+        read typesToRead: Set<TargetBiometric>
+    ) async throws -> HKAuthorizationRequestStatus {
+        let toShare: Set<HKSampleType> = Set(try typesToShare.map { biometric in
+            let biometric = try CodableHealthBiometric(identifier: biometric.healthKitIdentifier)
+            return biometric.sampleType
+        })
+        let toRead: Set<HKSampleType> = Set(try typesToRead.map { biometric in
+            let biometric = try CodableHealthBiometric(identifier: biometric.healthKitIdentifier)
+            return biometric.sampleType
+        })
+        return try await self.getRequestStatusForAuthorization(toShare: toShare, read: toRead)
+    }
+    
+    internal func internalRequestAuthorization<TargetBiometric: Biometric>(
+        toShare typesToShare: Set<TargetBiometric>,
+        read typesToRead: Set<TargetBiometric>
+    ) async throws {
+        let toShare: Set<HKSampleType> = Set(try typesToShare.map { biometric in
+            let biometric = try CodableHealthBiometric(identifier: biometric.healthKitIdentifier)
+            return biometric.sampleType
+        })
+        let toRead: Set<HKSampleType> = Set(try typesToRead.map { biometric in
+            let biometric = try CodableHealthBiometric(identifier: biometric.healthKitIdentifier)
+            return biometric.sampleType
+        })
+        return try await self.requestAuthorization(toShare: toShare, read: toRead)
+    }
+}
+
+// MARK: - Error
+
+/// Errors thrown when authorizing the status of a given biometric.
+enum HealthKitAuthorizorError : Swift.Error {
+    
+    /// Thrown when a health data is not available on the device.
+    case healthDataNotAvailable
+    
+    /// Thrown when there is a new and unhandled case in the `HKAuthorizationRequestStatus` type.
+    case unsupportedRequestStatusForAuthorizationStatus
+    
+    /// An error thrown if the request for authoration failed.
+    case failedToRequestAuthorization
+}
+
 // MARK: - HKHealthStore
 
 @available(macOS 13.0, *)
@@ -61,6 +109,12 @@ extension HKHealthStore : HealthKitAuthorizor {
         read typesToRead: Set<HKObjectType>
     ) async throws -> HKAuthorizationRequestStatus {
         try await withCheckedThrowingContinuation { continuation in
+            
+            guard self.isHealthDataAvailable else {
+                continuation.resume(throwing: HealthKitAuthorizorError.healthDataNotAvailable)
+                return
+            }
+            
             self.getRequestStatusForAuthorization(
                 toShare: typesToShare,
                 read: typesToRead
@@ -79,11 +133,17 @@ extension HKHealthStore : HealthKitAuthorizor {
         read typesToRead: Set<HKObjectType>
     ) async throws {
         try await withCheckedThrowingVoidContinuation { continuation in
+            
+            guard self.isHealthDataAvailable else {
+                continuation.resume(throwing: HealthKitAuthorizorError.healthDataNotAvailable)
+                return
+            }
+            
             self.requestAuthorization(toShare: typesToShare, read: typesToRead) { success, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                 } else if !success {
-                    continuation.resume(throwing: HealthBiometricAuthorizer.Error.failedToRequestAuthorization)
+                    continuation.resume(throwing: HealthKitAuthorizorError.failedToRequestAuthorization)
                 } else {
                     continuation.resume()
                 }

@@ -43,7 +43,7 @@ public struct TemperatureBiometric : Biometric {
     public static let bodyTemperature = Self(healthKitIdentifier: .bodyTemperature)
 }
 
-// MARK: - QueryExecutor + Length
+// MARK: - QueryExecutor + Temperature
 
 public extension QueryExecutor {
     
@@ -57,5 +57,24 @@ public extension QueryExecutor {
             unit: unit,
             options: options
         )
+    }
+}
+
+// MARK: - HealthKitAuthorizor + Temperature
+
+public extension HealthKitAuthorizor {
+    
+    func getRequestStatusForAuthorization(
+        toShare typesToShare: Set<TemperatureBiometric>,
+        read typesToRead: Set<TemperatureBiometric>
+    ) async throws -> HKAuthorizationRequestStatus {
+        return try await self.internalGetRequestStatusForAuthorization(toShare: typesToShare, read: typesToRead)
+    }
+    
+    func requestAuthorization(
+        toShare typesToShare: Set<TemperatureBiometric>,
+        read typesToRead: Set<TemperatureBiometric>
+    ) async throws {
+        return try await self.internalRequestAuthorization(toShare: typesToShare, read: typesToRead)
     }
 }

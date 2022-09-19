@@ -60,7 +60,7 @@ public struct CardioFitnessBiometric : Biometric {
     public static let vo2Max = Self(healthKitIdentifier: .vo2Max)
 }
 
-// MARK: - QueryExecutor + Length
+// MARK: - QueryExecutor + CardioFitness
 
 public extension QueryExecutor {
     
@@ -74,5 +74,24 @@ public extension QueryExecutor {
             unit: unit,
             options: options
         )
+    }
+}
+
+// MARK: - HealthKitAuthorizor + CardioFitness
+
+public extension HealthKitAuthorizor {
+    
+    func getRequestStatusForAuthorization(
+        toShare typesToShare: Set<CardioFitnessBiometric>,
+        read typesToRead: Set<CardioFitnessBiometric>
+    ) async throws -> HKAuthorizationRequestStatus {
+        return try await self.internalGetRequestStatusForAuthorization(toShare: typesToShare, read: typesToRead)
+    }
+    
+    func requestAuthorization(
+        toShare typesToShare: Set<CardioFitnessBiometric>,
+        read typesToRead: Set<CardioFitnessBiometric>
+    ) async throws {
+        return try await self.internalRequestAuthorization(toShare: typesToShare, read: typesToRead)
     }
 }

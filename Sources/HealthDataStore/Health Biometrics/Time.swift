@@ -76,3 +76,22 @@ public extension QueryExecutor {
         )
     }
 }
+
+// MARK: - HealthKitAuthorizor + Time
+
+public extension HealthKitAuthorizor {
+    
+    func getRequestStatusForAuthorization(
+        toShare typesToShare: Set<TimeBiometric>,
+        read typesToRead: Set<TimeBiometric>
+    ) async throws -> HKAuthorizationRequestStatus {
+        return try await self.internalGetRequestStatusForAuthorization(toShare: typesToShare, read: typesToRead)
+    }
+    
+    func requestAuthorization(
+        toShare typesToShare: Set<TimeBiometric>,
+        read typesToRead: Set<TimeBiometric>
+    ) async throws {
+        return try await self.internalRequestAuthorization(toShare: typesToShare, read: typesToRead)
+    }
+}
