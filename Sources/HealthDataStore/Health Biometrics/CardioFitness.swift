@@ -20,7 +20,7 @@ import HealthKit
 /// huskies, have V̇O2 max values exceeding 200 mL/(kg·min).
 public enum CardioFitness : String, Unit {
     
-    /// Standard unit for `vo2max` (`mL/(kg·min`).
+    /// Standard unit for `vo2max` (`mL/kg·min`).
     case mLkgPerMin = "mL/min·kg"
     
     var healthKitUnit: HKUnit {
