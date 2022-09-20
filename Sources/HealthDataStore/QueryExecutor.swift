@@ -42,7 +42,14 @@ extension QueryExecutor {
     ) async throws -> [QueryResult] {
         let biometric = try CodableHealthBiometric(identifier: healthKitIdentifier)
         let samples = try await self.fetchSamples(for: biometric.sampleType, options: options)
-        return samples.map { sample in
+        return try samples.map { sample in
+            
+            guard sample.quantityType.is(compatibleWith: unit.healthKitUnit) else {
+                throw QueryError.unitIncompatibleWithQuantityType(
+                    quantityType: sample.quantityType, desiredUnit: unit.healthKitUnit
+                )
+            }
+            
             return QueryResult(
                 startDate: sample.startDate,
                 endDate: sample.endDate,
@@ -79,6 +86,9 @@ public enum QueryError : Error {
     /// After a query it is expected to be able to cast to a `HKQuantitySample` type. This error is thrown when the returned
     /// samples do not conform to `HKQuantitySample`.
     case unsupportedSampleType(samples: [HKSample])
+    
+    /// Throws when a query result quantity type is not compatible with the requested unit.
+    case unitIncompatibleWithQuantityType(quantityType: HKQuantityType, desiredUnit: HKUnit)
 }
 
 // MARK: - HKHealthStore
