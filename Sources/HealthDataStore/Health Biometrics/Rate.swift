@@ -105,3 +105,23 @@ public extension HealthKitAuthorizor {
         return try await self.internalRequestAuthorization(toShare: typesToShare, read: typesToRead)
     }
 }
+
+// MARK: - BackgroundDelivery + RateBiometric
+
+public extension BackgroundDeliveryEnabler {
+    
+    func enableBackgroundDelivery(
+        for type: RateBiometric,
+        frequency: HKUpdateFrequency
+    ) async throws {
+        let biometric = try CodableHealthBiometric(identifier: type.healthKitIdentifier)
+        try await self.enableBackgroundDelivery(for: biometric.sampleType, frequency: frequency)
+    }
+    
+    func disableBackgroundDelivery(
+        for type: RateBiometric
+    ) async throws {
+        let biometric = try CodableHealthBiometric(identifier: type.healthKitIdentifier)
+        try await self.disableBackgroundDelivery(for: biometric.sampleType)
+    }
+}

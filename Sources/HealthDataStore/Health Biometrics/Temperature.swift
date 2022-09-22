@@ -41,6 +41,10 @@ public struct TemperatureBiometric : Biometric {
     ///
     /// These samples use temperature units (described in `HKUnit`) and measure discrete values (described in `HKStatisticsQuery`).
     public static let bodyTemperature = Self(healthKitIdentifier: .bodyTemperature)
+    
+    /// A quantity sample type that measures the user’s sleeping wrist temperature temperature.
+    @available(iOS 16.0, *)
+    public static let appleSleepingWristTemperature = Self(healthKitIdentifier: .appleSleepingWristTemperature)
 }
 
 // MARK: - QueryExecutor + Temperature
@@ -76,5 +80,25 @@ public extension HealthKitAuthorizor {
         read typesToRead: Set<TemperatureBiometric>
     ) async throws {
         return try await self.internalRequestAuthorization(toShare: typesToShare, read: typesToRead)
+    }
+}
+
+// MARK: - BackgroundDelivery + TemperatureBiometric
+
+public extension BackgroundDeliveryEnabler {
+    
+    func enableBackgroundDelivery(
+        for type: TemperatureBiometric,
+        frequency: HKUpdateFrequency
+    ) async throws {
+        let biometric = try CodableHealthBiometric(identifier: type.healthKitIdentifier)
+        try await self.enableBackgroundDelivery(for: biometric.sampleType, frequency: frequency)
+    }
+    
+    func disableBackgroundDelivery(
+        for type: TemperatureBiometric
+    ) async throws {
+        let biometric = try CodableHealthBiometric(identifier: type.healthKitIdentifier)
+        try await self.disableBackgroundDelivery(for: biometric.sampleType)
     }
 }

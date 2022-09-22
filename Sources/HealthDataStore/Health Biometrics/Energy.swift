@@ -41,3 +41,30 @@ public enum Energy : String, Unit {
         }
     }
 }
+
+// MARK: - EnergyBiometric
+
+/// Defines an energy biometric.
+public struct EnergyBiometric : Biometric {
+    
+    public static let Units = Energy.self
+    
+    public let healthKitIdentifier: HKQuantityTypeIdentifier
+    
+    /// A quantity sample type that measures the resting energy burned by the user.
+    ///
+    /// Resting energy is the energy that the user’s body burns to maintain its normal, resting state. The body uses this energy to
+    /// perform basic functions like breathing, circulating blood, and managing the growth and maintenance of cells. These
+    /// samples use energy units (described in `HKUnit`) and measure cumulative values (described in `HKStatisticsQuery`).
+    public static let basalEnergyBurned = Self(healthKitIdentifier: .basalEnergyBurned)
+    
+    /// A quantity sample type that measures the amount of active energy the user has burned.
+    ///
+    /// Active energy is the energy that the user has burned due to physical activity and exercise. These samples should not
+    /// include the resting energy burned during the sample’s duration. Use the health store’s
+    /// `splitTotalEnergy(_:start:end:resultsHandler:)` method to split a workout’s total energy burned into
+    /// the active and resting portions, and then save each portion in its own sample.
+    ///
+    /// Active energy samples use energy units (described in HKUnit) and measure cumulative values (described in HKStatisticsQuery).
+    public static let activeEnergyBurned = Self(healthKitIdentifier: .activeEnergyBurned)
+}

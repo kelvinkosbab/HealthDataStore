@@ -34,6 +34,7 @@ public enum Time : String, Unit {
 
 // MARK: - TimeBiometric
 
+/// Defines a time biometric.
 public struct TimeBiometric : Biometric {
     
     public static let Units = Time.self
@@ -93,5 +94,25 @@ public extension HealthKitAuthorizor {
         read typesToRead: Set<TimeBiometric>
     ) async throws {
         return try await self.internalRequestAuthorization(toShare: typesToShare, read: typesToRead)
+    }
+}
+
+// MARK: - BackgroundDelivery + TemperatureBiometric
+
+public extension BackgroundDeliveryEnabler {
+    
+    func enableBackgroundDelivery(
+        for type: TimeBiometric,
+        frequency: HKUpdateFrequency
+    ) async throws {
+        let biometric = try CodableHealthBiometric(identifier: type.healthKitIdentifier)
+        try await self.enableBackgroundDelivery(for: biometric.sampleType, frequency: frequency)
+    }
+    
+    func disableBackgroundDelivery(
+        for type: TimeBiometric
+    ) async throws {
+        let biometric = try CodableHealthBiometric(identifier: type.healthKitIdentifier)
+        try await self.disableBackgroundDelivery(for: biometric.sampleType)
     }
 }
