@@ -69,7 +69,7 @@ public enum BackgroundDeliveryError : Error {
 // MARK: - BackgroundDelivery
 
 @available(macOS 13.0, *)
-extension HKHealthStore {
+extension HKHealthStore : BackgroundDeliveryEnabler {
     
     public func enableBackgroundDelivery(
         for type: HKObjectType,
