@@ -1,5 +1,4 @@
-//
-//  HealthKitSupportedTests.swift
+//KitSupportedTests.swift
 //  
 //
 //  Created by Kelvin Kosbab on 7/10/22.
@@ -7,7 +6,7 @@
 
 import XCTest
 import HealthKit
-@testable import HealthDataStore
+@testable import HealthKitHelpers
 
 #if !os(macOS)
 import UIKit

@@ -78,9 +78,9 @@ public extension QueryExecutor {
         _ biometric: RateBiometric,
         in unit: RateBiometric.UnitofMeasurement,
         options: QueryOptions
-    ) async throws -> [QueryResult] {
-        return try await self.fetch(
-            healthKitIdentifier: biometric.healthKitIdentifier,
+    ) async throws -> [Sample] {
+        return try await self.query(
+            identifier: biometric.healthKitIdentifier,
             unit: unit,
             options: options
         )

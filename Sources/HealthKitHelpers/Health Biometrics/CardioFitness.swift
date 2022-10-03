@@ -26,7 +26,9 @@ public enum CardioFitness : String, Unit {
     var healthKitUnit: HKUnit {
         switch self {
         case .mLkgPerMin:
-            return HKUnit.literUnit(with: .milli).unitMultiplied(by: HKUnit.gramUnit(with: .kilo)).unitDivided(by: HKUnit.minute())
+            return HKUnit.literUnit(with: .milli)
+                .unitMultiplied(by: HKUnit.gramUnit(with: .kilo))
+                .unitDivided(by: HKUnit.minute())
         }
     }
 }
@@ -68,9 +70,9 @@ public extension QueryExecutor {
         _ biometric: CardioFitnessBiometric,
         in unit: CardioFitnessBiometric.UnitofMeasurement,
         options: QueryOptions
-    ) async throws -> [QueryResult] {
-        return try await self.fetch(
-            healthKitIdentifier: biometric.healthKitIdentifier,
+    ) async throws -> [Sample] {
+        return try await self.query(
+            identifier: biometric.healthKitIdentifier,
             unit: unit,
             options: options
         )

@@ -1,6 +1,5 @@
 //
 //  CodableHealthBiometricAuthorization.swift
-//  Health
 //
 //  Created by Kelvin Kosbab on 4/27/22.
 //

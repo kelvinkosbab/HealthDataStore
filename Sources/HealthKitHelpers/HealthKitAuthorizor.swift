@@ -1,6 +1,4 @@
-//
-//  HealthKitAuthorizor.swift
-//  Health
+//KitAuthorizor.swift
 //
 //  Created by Kelvin Kosbab on 4/15/22.
 //

@@ -1,6 +1,4 @@
-//
-//  HealthBiometric.swift
-//  Health
+//Biometric.swift
 //
 //  Created by Kelvin Kosbab on 4/3/22.
 //

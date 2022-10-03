@@ -1,6 +1,5 @@
 //
 //  QueryOptions.swift
-//  Health
 //
 //  Created by Kelvin Kosbab on 8/3/22.
 //

@@ -1,5 +1,4 @@
-//
-//  HealthKitSupported.swift
+//KitSupported.swift
 //  
 //
 //  Created by Kelvin Kosbab on 7/10/22.
