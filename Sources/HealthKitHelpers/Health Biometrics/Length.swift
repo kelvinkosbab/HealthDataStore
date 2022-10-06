@@ -109,25 +109,6 @@ public extension QueryExecutor {
     }
 }
 
-// MARK: - HealthKitAuthorizor + Length
-
-public extension HealthKitAuthorizor {
-    
-    func getRequestStatusForAuthorization(
-        toShare typesToShare: Set<LengthBiometric>,
-        read typesToRead: Set<LengthBiometric>
-    ) async throws -> HKAuthorizationRequestStatus {
-        return try await self.internalGetRequestStatusForAuthorization(toShare: typesToShare, read: typesToRead)
-    }
-    
-    func requestAuthorization(
-        toShare typesToShare: Set<LengthBiometric>,
-        read typesToRead: Set<LengthBiometric>
-    ) async throws {
-        return try await self.internalRequestAuthorization(toShare: typesToShare, read: typesToRead)
-    }
-}
-
 // MARK: - BackgroundDelivery + LengthBiometric
 
 public extension BackgroundDeliveryEnabler {

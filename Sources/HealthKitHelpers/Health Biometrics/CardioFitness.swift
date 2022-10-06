@@ -26,7 +26,8 @@ public enum CardioFitness : String, Unit {
     var healthKitUnit: HKUnit {
         switch self {
         case .mLkgPerMin:
-            return HKUnit.literUnit(with: .milli)
+            return HKUnit
+                .literUnit(with: .milli)
                 .unitMultiplied(by: HKUnit.gramUnit(with: .kilo))
                 .unitDivided(by: HKUnit.minute())
         }
@@ -76,25 +77,6 @@ public extension QueryExecutor {
             unit: unit,
             options: options
         )
-    }
-}
-
-// MARK: - HealthKitAuthorizor + CardioFitness
-
-public extension HealthKitAuthorizor {
-    
-    func getRequestStatusForAuthorization(
-        toShare typesToShare: Set<CardioFitnessBiometric>,
-        read typesToRead: Set<CardioFitnessBiometric>
-    ) async throws -> HKAuthorizationRequestStatus {
-        return try await self.internalGetRequestStatusForAuthorization(toShare: typesToShare, read: typesToRead)
-    }
-    
-    func requestAuthorization(
-        toShare typesToShare: Set<CardioFitnessBiometric>,
-        read typesToRead: Set<CardioFitnessBiometric>
-    ) async throws {
-        return try await self.internalRequestAuthorization(toShare: typesToShare, read: typesToRead)
     }
 }
 

@@ -34,11 +34,31 @@ class QueryExecutorTests : XCTestCase {
     }
     
     func testQuerySampleTypeWithCompletionCallsHKExecute() {
-        let excecutor = MockQueryExecutor()
     }
     
     func testQuerySampleTypeCallsHKExecute() async {
         
+    }
+    
+    func testQueryIdentifierWithCompletionCallsHKExecute() {
+        let expectation = expectation(description: #function)
+        let healthKitIdentifier: HKQuantityTypeIdentifier = .bodyTemperature
+        let mock = MockQueryExecutor()
+        mock.query(
+            identifier: healthKitIdentifier,
+            unit: Length.meters,
+            options: self.queryOptions
+        ) { result in
+            switch result {
+            case .error(let error):
+                // do something
+                break
+            case .success(samples: let samples):
+                // do something
+                break
+            }
+        }
+        wait(for: [expectation], timeout: 5)
     }
     
     func testQueryIdentifierCallsHKExecute() async {
@@ -49,9 +69,7 @@ class QueryExecutorTests : XCTestCase {
                 identifier: healthKitIdentifier,
                 unit: Length.meters,
                 options: self.queryOptions)
-            
-            let test = try CodableHealthBiometric(identifier: healthKitIdentifier)
-            XCTAssert(test.sampleType == mock.query?.sampleType)
+            XCTAssert(mock.query != nil)
         } catch {
             XCTFail("Test threw error: \(error)")
         }

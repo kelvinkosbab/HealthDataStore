@@ -64,25 +64,6 @@ public extension QueryExecutor {
     }
 }
 
-// MARK: - HealthKitAuthorizor + Temperature
-
-public extension HealthKitAuthorizor {
-    
-    func getRequestStatusForAuthorization(
-        toShare typesToShare: Set<TemperatureBiometric>,
-        read typesToRead: Set<TemperatureBiometric>
-    ) async throws -> HKAuthorizationRequestStatus {
-        return try await self.internalGetRequestStatusForAuthorization(toShare: typesToShare, read: typesToRead)
-    }
-    
-    func requestAuthorization(
-        toShare typesToShare: Set<TemperatureBiometric>,
-        read typesToRead: Set<TemperatureBiometric>
-    ) async throws {
-        return try await self.internalRequestAuthorization(toShare: typesToShare, read: typesToRead)
-    }
-}
-
 // MARK: - BackgroundDelivery + TemperatureBiometric
 
 public extension BackgroundDeliveryEnabler {
