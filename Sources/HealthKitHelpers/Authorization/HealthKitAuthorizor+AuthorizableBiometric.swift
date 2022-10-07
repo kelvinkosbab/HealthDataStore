@@ -18,8 +18,8 @@ public extension HealthKitAuthorizor {
     /// This determination is performed asynchronously and its completion will be executed on an arbitrary
     /// background queue.
     func getRequestStatusForAuthorization(
-        toShare typesToShare: Set<AuthorizableBiometric>,
-        read typesToRead: Set<AuthorizableBiometric>,
+        toShare typesToShare: [AuthorizableBiometric],
+        read typesToRead: [AuthorizableBiometric],
         completion: @escaping (RequestStatusResult) -> Void
     ) {
         
@@ -56,8 +56,8 @@ public extension HealthKitAuthorizor {
     /// This determination is performed asynchronously and its completion will be executed on an arbitrary
     /// background queue.
     func getRequestStatusForAuthorization(
-        toShare typesToShare: Set<AuthorizableBiometric>,
-        read typesToRead: Set<AuthorizableBiometric>
+        toShare typesToShare: [AuthorizableBiometric],
+        read typesToRead: [AuthorizableBiometric]
     ) async throws -> HKAuthorizationRequestStatus {
         return try await withCheckedThrowingContinuation { continuation in
             self.getRequestStatusForAuthorization(
@@ -99,8 +99,8 @@ public extension HealthKitAuthorizor {
     /// the Health app. Your app appears in the Health app’s Sources tab, even if the user didn’t allow permission to
     /// read or share data.
     func requestAuthorization(
-        toShare typesToShare: Set<AuthorizableBiometric>,
-        read typesToRead: Set<AuthorizableBiometric>,
+        toShare typesToShare: [AuthorizableBiometric],
+        read typesToRead: [AuthorizableBiometric],
         completion: @escaping (RequestAuthorizationResult) -> Void
     ) {
         
@@ -158,8 +158,8 @@ public extension HealthKitAuthorizor {
     /// the Health app. Your app appears in the Health app’s Sources tab, even if the user didn’t allow permission to
     /// read or share data.
     func requestAuthorization(
-        toShare typesToShare: Set<AuthorizableBiometric>,
-        read typesToRead: Set<AuthorizableBiometric>
+        toShare typesToShare: [AuthorizableBiometric],
+        read typesToRead: [AuthorizableBiometric]
     ) async throws {
         return try await withCheckedThrowingVoidContinuation { continuation in
             self.requestAuthorization(
